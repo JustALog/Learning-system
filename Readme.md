@@ -1,8 +1,8 @@
-# Nền tảng quản lý khóa học (Mô tả hệ thống học)
+# Nền tảng quản lý khóa học 
 
-## 1. Tổng quan hệ thống quản lý khóa học
+## 1. Tổng quan
 
-Hệ thống quản lý khóa học (Learning Management System – LMS) là một nền tảng phần mềm được thiết kế nhằm hỗ trợ tổ chức, quản lý và vận hành các hoạt động đào tạo một cách hiệu quả trong môi trường số. Hệ thống cho phép số hóa toàn bộ quy trình dạy và học, từ việc xây dựng nội dung khóa học, quản lý người học, theo dõi tiến độ học tập cho đến đánh giá kết quả đào tạo.
+Nền tảng quản lý khóa học là một nền tảng phần mềm được thiết kế nhằm hỗ trợ tổ chức, quản lý và vận hành các hoạt động đào tạo một cách hiệu quả trong môi trường số. Hệ thống cho phép số hóa toàn bộ quy trình dạy và học, từ việc xây dựng nội dung khóa học, quản lý người học, theo dõi tiến độ học tập cho đến đánh giá kết quả đào tạo.
 
 Mục tiêu của hệ thống là nâng cao chất lượng giảng dạy, tối ưu hóa công tác quản lý đào tạo và tạo ra môi trường học tập linh hoạt, thuận tiện cho người học. Thông qua việc ứng dụng công nghệ thông tin, hệ thống góp phần giảm thiểu chi phí vận hành, tăng khả năng tiếp cận tri thức và đáp ứng yêu cầu chuyển đổi số trong giáo dục.
 
