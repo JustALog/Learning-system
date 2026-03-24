@@ -8,6 +8,19 @@ const router = express.Router();
 router.use(authenticate);
 // GET /api/students/me - Lấy thông tin cá nhân
 router.get('/me', studentController.getMe);
+
+// GET /api/students/me/stats - Lấy thống kê bản thân
+router.get('/me/stats', (req, res, next) => {
+  req.params.id = req.user.student_id;
+  studentController.getStats(req, res, next);
+});
+
+// GET /api/students/me/schedule - Lấy lịch học bản thân
+router.get('/me/schedule', (req, res, next) => {
+  req.params.id = req.user.student_id;
+  studentController.getSchedule(req, res, next);
+});
+
 // Các route dưới đây yêu cầu kiểm tra quyền sở hữu (Self-authorization)
 router.use('/:id', authorizeSelf);
 // GET /api/students/:id

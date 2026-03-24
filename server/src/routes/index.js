@@ -5,6 +5,7 @@ const courseRoutes = require('./course.routes');
 const semesterRoutes = require('./semester.routes');
 const sectionRoutes = require('./section.routes');
 const enrollmentRoutes = require('./enrollment.routes');
+const resultRoutes = require('./result.routes');
 
 const router = express.Router();
 
@@ -24,5 +25,6 @@ router.use('/courses', courseRoutes);
 router.use('/semesters', semesterRoutes);
 router.use('/sections', sectionRoutes);
 router.use('/enrollments', enrollmentRoutes);
+router.use('/results', resultRoutes);
 
 module.exports = router;

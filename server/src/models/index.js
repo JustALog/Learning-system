@@ -28,6 +28,7 @@ const Semester = require('./Semester')(sequelize);
 const Section = require('./Section')(sequelize);
 const Schedule = require('./Schedule')(sequelize);
 const Enrollment = require('./Enrollment')(sequelize);
+const Result = require('./Result')(sequelize);
 
 // Collect all models
 const models = {
@@ -37,6 +38,7 @@ const models = {
   Section,
   Schedule,
   Enrollment,
+  Result,
 };
 
 // Run associations
