@@ -22,8 +22,8 @@ class AuthController {
    */
   async login(req, res, next) {
     try {
-      const { email, password } = req.body;
-      const result = await authService.login(email, password);
+      const { student_id, password } = req.body;
+      const result = await authService.login(student_id, password);
       res.status(200).json({
         success: true,
         message: 'Đăng nhập thành công',

@@ -47,17 +47,17 @@ class AuthService {
   }
 
   /**
-   * Login with email and password
+   * Login with student_id and password
    */
-  async login(email, password) {
-    const student = await Student.findOne({ where: { email } });
+  async login(student_id, password) {
+    const student = await Student.findByPk(student_id);
     if (!student) {
-      throw ApiError.unauthorized('Email hoặc mật khẩu không đúng');
+      throw ApiError.unauthorized('Mã sinh viên hoặc mật khẩu không đúng');
     }
 
     const isPasswordValid = await bcrypt.compare(password, student.password_hash);
     if (!isPasswordValid) {
-      throw ApiError.unauthorized('Email hoặc mật khẩu không đúng');
+      throw ApiError.unauthorized('Mã sinh viên hoặc mật khẩu không đúng');
     }
 
     if (student.status === 'suspended') {

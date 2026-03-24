@@ -51,7 +51,7 @@ router.post(
 router.post(
   '/login',
   [
-    body('email').trim().isEmail().withMessage('Email không hợp lệ'),
+    body('student_id').trim().notEmpty().withMessage('Mã sinh viên là bắt buộc'),
     body('password').notEmpty().withMessage('Mật khẩu là bắt buộc'),
     validate,
   ],

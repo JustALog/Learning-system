@@ -39,4 +39,19 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-module.exports = { authenticate };
+const authorizeSelf = (req, res, next) => {
+  const { id } = req.params;
+
+  if (!req.user) {
+    return next(ApiError.unauthorized('Authentication required'));
+  }
+
+  // If the parameter 'id' exists, it must match the logged-in student's id
+  if (id && id !== req.user.student_id) {
+    return next(ApiError.forbidden('You do not have permission to access this resource'));
+  }
+
+  next();
+};
+
+module.exports = { authenticate, authorizeSelf };

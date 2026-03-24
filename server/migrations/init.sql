@@ -184,3 +184,56 @@ CREATE TABLE IF NOT EXISTS enrollments (
   INDEX idx_enrollments_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   COMMENT='Đăng ký học phần';
+-- ──────────────────────────────────────
+-- 7. Dữ liệu mẫu (Seed Data)
+-- ──────────────────────────────────────
+
+-- Thêm sinh viên mẫu
+INSERT INTO students (student_id, full_name, email, password_hash, major, academic_year)
+VALUES ('SV20210001', 'Nguyễn Văn A', 'nva.sv2021@university.edu.vn', '$2b$10$YourHashHere', 'Công nghệ Thông tin', 3);
+
+-- Thêm học kỳ mẫu
+INSERT INTO semesters (semester_name, academic_year, semester_number, start_date, end_date, reg_open, reg_close, is_current)
+VALUES ('Học kỳ 1', '2026-2027', 1, '2026-09-01', '2027-01-15', '2026-08-01 08:00:00', '2026-08-20 23:59:59', TRUE);
+
+-- Thêm danh mục môn học
+INSERT INTO courses (course_id, course_name, credits, department)
+VALUES 
+('CS101', 'Nhập môn Lập trình', 3, 'Software Engineering'),
+('CS201', 'Cấu trúc Dữ liệu và Giải thuật', 4, 'Computer Science'),
+('MA101', 'Giải tích 1', 3, 'Mathematics'),
+('SE301', 'Công nghệ Phần mềm', 4, 'Software Engineering'),
+('SE302', 'Thực hành Công nghệ Phần mềm', 1, 'Software Engineering'),
+('AI401', 'Trí tuệ Nhân tạo', 3, 'Computer Science');
+
+-- Thêm quan hệ tiên quyết (ví dụ)
+UPDATE courses SET prerequisite_id = 'CS101' WHERE course_name = 'Cấu trúc Dữ liệu và Giải thuật';
+UPDATE courses SET prerequisite_id = 'CS201' WHERE course_name = 'Công nghệ Phần mềm';
+UPDATE courses SET prerequisite_id = 'SE301' WHERE course_name = 'Thực hành Công nghệ Phần mềm';
+
+-- Thêm lớp học phần cho học kỳ hiện tại (semester_id = 1)
+INSERT INTO sections (section_code, course_id, semester_id, lecturer_name, max_students, current_students, room, status)
+VALUES 
+('CS101.01', 'CS101', 1, 'ThS. Lê Công C', 60, 60, 'A1.204', 'open'),
+('CS201.01', 'CS201', 1, 'PGS. TS. Phạm Văn D', 50, 45, 'B2.301', 'open'),
+('MA101.01', 'MA101', 1, 'ThS. Hoàng Văn E', 100, 80, 'C3.102', 'open'),
+('SE301.01', 'SE301', 1, 'TS. Nguyễn Thị F', 40, 15, 'D1.205', 'open'),
+('SE302.01', 'SE302', 1, 'TS. Nguyễn Thị F', 40, 15, 'PM3', 'open'),
+('AI401.01', 'AI401', 1, 'GS. TS. Lê Văn G', 50, 25, 'A2.103', 'open');
+
+-- Thêm thời khóa biểu cho các lớp học phần
+-- day_of_week: 2 (Thứ 2), 3 (Thứ 3), ..., 8 (Chủ nhật)
+INSERT INTO schedules (section_id, day_of_week, start_period, end_period, room)
+VALUES 
+(1, 2, 1, 3, 'A1.204'), -- CS101: Thứ 2, Tiết 1-3
+(2, 3, 4, 6, 'B2.301'), -- CS201: Thứ 3, Tiết 4-6
+(3, 4, 7, 9, 'C3.102'), -- MA101: Thứ 4, Tiết 7-9
+(4, 5, 1, 4, 'D1.205'), -- SE301: Thứ 5, Tiết 1-4
+(5, 6, 1, 3, 'PM3'),    -- SE302: Thứ 6, Tiết 1-3
+(6, 3, 4, 6, 'A2.103'); -- AI401: Thứ 3, Tiết 4-6 (Trùng lịch với CS201 để test UI)
+
+-- Thêm đăng ký mẫu cho sinh viên SV20210001
+INSERT INTO enrollments (student_id, section_id, status)
+VALUES 
+('SV20210001', 2, 'enrolled'), -- CS201 (Thành công)
+('SV20210001', 3, 'enrolled'); -- MA101 (Chờ xử lý - mô phỏng trong UI bằng status)

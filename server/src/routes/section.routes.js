@@ -8,19 +8,13 @@ const router = express.Router();
 
 router.use(authenticate);
 
-/**
- * GET /api/sections
- */
+// GET /api/sections
 router.get('/', sectionController.getAll);
 
-/**
- * GET /api/sections/:id
- */
+// GET /api/sections/:id
 router.get('/:id', sectionController.getById);
 
-/**
- * POST /api/sections
- */
+// POST /api/sections
 router.post(
   '/',
   [
@@ -41,15 +35,15 @@ router.post(
     body('lecturer_name').optional().trim(),
     body('room').optional().trim(),
     body('schedules').optional().isArray(),
-    body('schedules.*.day_of_week')
+    body('schedules//.day_of_week')
       .optional()
       .isInt({ min: 2, max: 8 })
       .withMessage('day_of_week phải từ 2-8'),
-    body('schedules.*.start_period')
+    body('schedules//.start_period')
       .optional()
       .isInt({ min: 1, max: 12 })
       .withMessage('start_period phải từ 1-12'),
-    body('schedules.*.end_period')
+    body('schedules//.end_period')
       .optional()
       .isInt({ min: 1, max: 12 })
       .withMessage('end_period phải từ 1-12'),
@@ -58,9 +52,7 @@ router.post(
   sectionController.create
 );
 
-/**
- * PUT /api/sections/:id
- */
+// PUT /api/sections/:id
 router.put('/:id', sectionController.update);
 
 module.exports = router;

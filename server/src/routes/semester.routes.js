@@ -6,29 +6,19 @@ const router = express.Router();
 
 router.use(authenticate);
 
-/**
- * GET /api/semesters
- */
+/// GET /api/semesters
 router.get('/', semesterController.getAll);
 
-/**
- * GET /api/semesters/current
- */
+/// GET /api/semesters/current
 router.get('/current', semesterController.getCurrent);
 
-/**
- * GET /api/semesters/:id
- */
+/// GET /api/semesters/:id
 router.get('/:id', semesterController.getById);
 
-/**
- * POST /api/semesters
- */
+/// POST /api/semesters
 router.post('/', semesterController.create);
 
-/**
- * PUT /api/semesters/:id
- */
+/// PUT /api/semesters/:id
 router.put('/:id', semesterController.update);
 
 module.exports = router;

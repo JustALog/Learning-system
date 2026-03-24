@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').resolve(__dirname, '..', '.env') });
 
 const app = require('./app');
 const { sequelize } = require('./models');
@@ -8,6 +8,12 @@ const PORT = process.env.PORT || 3000;
 async function startServer() {
   try {
     // Test database connection
+    console.log('Attempting to connect to database...');
+    console.log(`DB_HOST: ${process.env.DB_HOST}`);
+    console.log(`DB_USER: ${process.env.DB_USER}`);
+    console.log(`DB_NAME: ${process.env.DB_NAME}`);
+    console.log(`DB_PASS: ${process.env.DB_PASS}`);
+
     await sequelize.authenticate();
     console.log('Database connection established successfully.');
 
