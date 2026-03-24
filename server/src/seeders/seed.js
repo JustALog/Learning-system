@@ -4,7 +4,7 @@
  */
 require('dotenv').config();
 const bcrypt = require('bcrypt');
-const { sequelize, Student, Course, Semester, Section, Schedule, Enrollment, Result } = require('../models');
+const { sequelize, Student, Course, Semester, Section, Schedule, Enrollment, Result, Admin } = require('../models');
 
 const SALT_ROUNDS = 10;
 
@@ -31,6 +31,16 @@ async function seedStudents(password) {
   ]);
   console.log(`Seeded ${students.length} students`);
   return students;
+}
+
+async function seedAdmins(password) {
+  console.log('--- Seeding Admins ---');
+  const admins = await Admin.bulkCreate([
+    { admin_id: 'ADMIN001', full_name: 'Quản trị viên Hệ thống', email: 'admin@university.edu.vn', password_hash: password, status: 'active' },
+    { admin_id: 'ADMIN002', full_name: 'Đào Tạo Manager', email: 'daotao@university.edu.vn', password_hash: password, status: 'active' },
+  ]);
+  console.log(`Seeded ${admins.length} admins`);
+  return admins;
 }
 
 async function seedCourses() {
@@ -185,6 +195,7 @@ async function main() {
     const password = await bcrypt.hash('123456', SALT_ROUNDS);
     
     const students = await seedStudents(password);
+    const admins = await seedAdmins(password);
     const courses = await seedCourses();
     const semesters = await seedSemesters();
     
@@ -196,7 +207,8 @@ async function main() {
 
     console.log('\n--- Seed Summary ---');
     console.log('Test Accounts (Password: 123456):');
-    students.slice(0, 5).forEach(s => console.log(` - [${s.student_id}] ${s.full_name} (${s.major})`));
+    students.slice(0, 5).forEach(s => console.log(` - Student: [${s.student_id}] ${s.full_name}`));
+    admins.forEach(a => console.log(` - Admin: [${a.admin_id}] ${a.full_name}`));
     console.log('...');
     console.log(`\n- Students: ${students.length}`);
     console.log(`- Courses: ${courses.length}`);

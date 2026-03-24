@@ -51,8 +51,9 @@ router.post(
 router.post(
   '/login',
   [
-    body('student_id').trim().notEmpty().withMessage('Mã sinh viên là bắt buộc'),
+    body('identifier').trim().notEmpty().withMessage('Mã đăng nhập là bắt buộc'),
     body('password').notEmpty().withMessage('Mật khẩu là bắt buộc'),
+    body('role').optional().isIn(['student', 'admin']).withMessage('Vai trò không hợp lệ'),
     validate,
   ],
   authController.login

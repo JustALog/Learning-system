@@ -1,69 +1,83 @@
-# Web Quản lý và Đăng ký Học phần - Full Stack Monorepo
+# Hệ thống Quản lý và Đăng ký Học phần - Full Stack Monorepo
 
-Hệ thống quản lý và đăng ký học phần dành cho sinh viên, bao gồm Backend API (Node.js/Express) và Frontend (Next.js/React).
+Hệ thống cung cấp nền tảng toàn diện cho sinh viên đăng ký môn học và quản trị viên quản lý đào tạo, sử dụng kiến trúc Monorepo với Frontend (React/Vite) và Backend API (Node.js/Express).
 
-## Cấu trúc dự án (Monorepo)
+## Cấu trúc dự án
 
 ```
 /
-├── client/                 # Frontend Next.js (Tailwind CSS, Shadcn UI)
-├── server/                 # Backend API (Express.js, Sequelize, MySQL)
+├── client/                 # Frontend (React 18, Vite, React Router, Framer Motion)
+├── server/                 # Backend API (Express.js, Sequelize, MySQL, JWT Auth)
 ├── package.json            # Cấu hình npm workspaces
 └── README.md
 ```
 
+## Các tính năng chính
+
+### 🎓 Dành cho Sinh viên (Student Portal)
+- **Dashboard:** Tổng quan kết quả học tập, tín chỉ tích lũy, GPA.
+- **Đăng ký học phần:** Giao diện trực quan chọn lớp, kiểm tra lịch trùng trống.
+- **Thời khóa biểu:** Xem lịch học theo tuần.
+- **Kết quả học tập:** Theo dõi điểm số từng môn và bảng điểm tổng hợp.
+
+### 🛡️ Dành cho Quản trị viên (Admin Site)
+- **Tổng quan (Dashboard):** Thống kê số lượng sinh viên, khóa học, và đăng ký chờ duyệt.
+- **Quản lý Môn học:** Xem, thêm, sửa, xóa môn học và thiết lập môn tiên quyết.
+- **Quản lý Học kỳ:** Thiết lập học kỳ hiện tại, thời gian bắt đầu/kết thúc và thời gian mở đăng ký.
+- **Quản lý Lớp học phần:** Tạo lớp, phân công giảng viên và phòng học.
+- **Giám sát đăng ký (Enrollment Monitor):** Theo dõi và quản lý các yêu cầu đăng ký học phần của sinh viên.
+
 ## Công nghệ sử dụng
 
-### Frontend (Client)
-- Framework: Next.js 16 (App Router)
-- UI Library: Shadcn UI & Tailwind CSS
-- Icons: Lucide React
+- **Frontend:** React 18, Vite, React Router DOM, Framer Motion (Animations), Lucide React (Icons), Vanilla CSS (Glassmorphism UI).
+- **Backend:** Node.js, Express.js.
+- **Database / ORM:** MySQL 8.0, Sequelize ORM.
+- **Security:** JWT (JSON Web Tokens) role-based authentication (Student/Admin), bcrypt mật khẩu.
 
-### Backend (Server)
-- Runtime: Node.js
-- Framework: Express.js
-- ORM: Sequelize 6
-- Database: MySQL 8.0+
-
-## Hướng dẫn bắt đầu
+## Hướng dẫn cài đặt và chạy thử
 
 ### 1. Cài đặt toàn bộ dependencies
-Từ thư mục gốc, chạy:
+Từ thư mục gốc (root), chạy:
 ```bash
 npm install
 ```
 
-### 2. Cấu hình môi trường
-Vào thư mục `server/` và cấu hình file `.env`:
+### 2. Cấu hình môi trường (Backend)
+Vào thư mục `server/` và tạo file `.env` tham khảo từ `.env.example`:
 ```bash
 cd server
 cp .env.example .env
-# Chỉnh sửa file .env với thông tin kết nối MySQL của bạn
 ```
+Cập nhật thông tin kết nối MySQL (DB_USER, DB_PASSWORD, DB_NAME, v.v.).
 
-### 3. Khởi động Cơ sở dữ liệu (Dùng Docker - Khuyên dùng)
-Nếu bạn đã cài đặt Docker, bạn có thể khởi động MySQL nhanh chóng:
+### 3. Thiết lập Cơ sở dữ liệu và Dữ liệu mẫu
+Khởi tạo cấu trúc bảng thông qua file `server/migrations/init.sql` vào MySQL của bạn, sau đó chạy lệnh seed để tạo dữ liệu mẫu và tài khoản test:
 ```bash
-docker-compose up -d db
+# Từ thư mục gốc
+npm run seed -w server
 ```
-Hệ thống sẽ tự động tạo cơ sở dữ liệu `learning_system` và khởi tạo các bảng từ file `server/migrations/init.sql`.
 
-### 4. Khởi động ứng dụng (Cả Client và Server)
-Từ thư mục gốc, chạy:
+### 4. Khởi động ứng dụng
+Từ thư mục gốc, hệ thống hỗ trợ chạy cả client và server song song:
 ```bash
 npm run dev
 ```
-- Frontend sẽ chạy tại: [http://localhost:3000](http://localhost:3000)
-- Backend API sẽ chạy tại: [http://localhost:5000](http://localhost:5000) (hoặc cổng cấu hình trong .env)
-
-## Các lệnh hữu ích khác
-
-| Lệnh | Mô tả |
-|------|-------|
-| `npm run dev` | Chạy cả client và server song song |
-| `npm run migrate` | Chạy migration cơ sở dữ liệu (Backend) |
-| `npm run seed` | Nạp dữ liệu mẫu (Backend) |
-| `npm run test:server` | Chạy bộ kiểm thử cho backend |
+- **Frontend (Client):** http://localhost:5173
+- **Backend (API):** http://localhost:5000
 
 ---
-© 2026 Hệ thống Đăng ký Học phần
+
+## 🔑 Tài khoản kiểm thử (Test Accounts)
+
+Sau khi chạy lệnh `npm run seed`, bạn có thể sử dụng các tài khoản sau để trải nghiệm hệ thống:
+
+**Quản trị viên (Admin):**
+- Mã đăng nhập: `ADMIN001`
+- Mật khẩu: `123456`
+- Role: Admin
+
+**Sinh viên (Student):**
+- Mã đăng nhập: `SV001` (hoặc SV002, SV003)
+- Mật khẩu: `123456`
+- Role: Student
+

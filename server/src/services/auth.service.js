@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { Student } = require('../models');
+const { Student, Admin } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 const SALT_ROUNDS = 10;
@@ -41,16 +41,43 @@ class AuthService {
     delete studentData.password_hash;
 
     return {
-      student: studentData,
-      token: this._generateToken(student),
+      user: studentData,
+      role: 'student',
+      token: this._generateToken(student, 'student'),
     };
   }
 
   /**
-   * Login with student_id and password
+   * Login with identifier and password based on role
    */
-  async login(student_id, password) {
-    const student = await Student.findByPk(student_id);
+  async login(identifier, password, role = 'student') {
+    if (role === 'admin') {
+      const admin = await Admin.findByPk(identifier);
+      if (!admin) {
+        throw ApiError.unauthorized('Mã quản trị viên hoặc mật khẩu không đúng');
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, admin.password_hash);
+      if (!isPasswordValid) {
+        throw ApiError.unauthorized('Mã quản trị viên hoặc mật khẩu không đúng');
+      }
+
+      if (admin.status === 'inactive') {
+        throw ApiError.forbidden('Tài khoản quản trị đã bị vô hiệu hóa');
+      }
+
+      const adminData = admin.toJSON();
+      delete adminData.password_hash;
+
+      return {
+        user: adminData,
+        role: 'admin',
+        token: this._generateToken(admin, 'admin'),
+      };
+    }
+
+    // Default: Student login
+    const student = await Student.findByPk(identifier);
     if (!student) {
       throw ApiError.unauthorized('Mã sinh viên hoặc mật khẩu không đúng');
     }
@@ -68,23 +95,24 @@ class AuthService {
     delete studentData.password_hash;
 
     return {
-      student: studentData,
-      token: this._generateToken(student),
+      user: studentData,
+      role: 'student',
+      token: this._generateToken(student, 'student'),
     };
   }
 
   /**
    * Generate JWT token
    */
-  _generateToken(student) {
-    return jwt.sign(
-      {
-        studentId: student.student_id,
-        email: student.email,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
-    );
+  _generateToken(user, role) {
+    const payload = {
+      userId: role === 'admin' ? user.admin_id : user.student_id,
+      email: user.email,
+      role: role,
+    };
+    return jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN || '24h',
+    });
   }
 }
 

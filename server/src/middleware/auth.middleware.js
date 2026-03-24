@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const ApiError = require('../utils/ApiError');
-const { Student } = require('../models');
+const { Student, Admin } = require('../models');
 
 /**
  * JWT Authentication middleware
@@ -11,31 +11,39 @@ const authenticate = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw ApiError.unauthorized('Access token is required');
+      throw ApiError.unauthorized('Yêu cầu token xác thực');
     }
 
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const student = await Student.findByPk(decoded.studentId, {
-      attributes: { exclude: ['password_hash'] },
-    });
-
-    if (!student) {
-      throw ApiError.unauthorized('Student not found');
+    let user;
+    if (decoded.role === 'admin') {
+      user = await Admin.findByPk(decoded.userId, {
+        attributes: { exclude: ['password_hash'] },
+      });
+    } else {
+      user = await Student.findByPk(decoded.userId, {
+        attributes: { exclude: ['password_hash'] },
+      });
     }
 
-    if (student.status === 'suspended') {
-      throw ApiError.forbidden('Account is suspended');
+    if (!user) {
+      throw ApiError.unauthorized('Người dùng không tồn tại');
     }
 
-    req.user = student;
+    if (user.status === 'suspended' || user.status === 'inactive') {
+      throw ApiError.forbidden('Tài khoản đã bị khóa hoặc vô hiệu hóa');
+    }
+
+    req.user = user;
+    req.role = decoded.role;
     next();
   } catch (error) {
     if (error instanceof ApiError) {
       return next(error);
     }
-    next(ApiError.unauthorized('Invalid or expired token'));
+    next(ApiError.unauthorized('Token không hợp lệ hoặc đã hết hạn'));
   }
 };
 
@@ -46,6 +54,10 @@ const authorizeSelf = (req, res, next) => {
     return next(ApiError.unauthorized('Authentication required'));
   }
 
+  if (req.role === 'admin') {
+    return next(); // Admin can access everything
+  }
+
   // If the parameter 'id' exists, it must match the logged-in student's id
   if (id && id !== req.user.student_id) {
     return next(ApiError.forbidden('You do not have permission to access this resource'));
@@ -54,4 +66,18 @@ const authorizeSelf = (req, res, next) => {
   next();
 };
 
-module.exports = { authenticate, authorizeSelf };
+const authorizeAdmin = (req, res, next) => {
+  if (req.role !== 'admin') {
+    return next(ApiError.forbidden('Chỉ quản trị viên mới có quyền thực hiện thao tác này'));
+  }
+  next();
+};
+
+const authorizeStudent = (req, res, next) => {
+  if (req.role !== 'student') {
+    return next(ApiError.forbidden('Chỉ sinh viên mới có quyền thực hiện thao tác này'));
+  }
+  next();
+};
+
+module.exports = { authenticate, authorizeSelf, authorizeAdmin, authorizeStudent };
