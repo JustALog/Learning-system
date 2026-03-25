@@ -1,180 +1,86 @@
-# Web Quản lý và Đăng ký Học phần - Backend API
+# Hệ thống Quản lý và Đăng ký Học phần
 
-Hệ thống quản lý và đăng ký học phần dành cho sinh viên, được phát triển bằng Node.js, Express, Sequelize ORM và cơ sở dữ liệu MySQL.
+Hệ thống cung cấp nền tảng toàn diện cho sinh viên đăng ký môn học và quản trị viên quản lý đào tạo, sử dụng kiến trúc Monorepo với Frontend (React/Vite) và Backend API (Node.js/Express).
+
+## Cấu trúc dự án
+
+```
+/
+├── client/                 # Frontend (React 18, Vite, React Router, Framer Motion)
+├── server/                 # Backend API (Express.js, Sequelize, MySQL, JWT Auth)
+├── package.json            # Cấu hình npm workspaces
+└── README.md
+```
+
+## Các tính năng chính
+
+### 🎓 Dành cho Sinh viên (Student Portal)
+- **Dashboard:** Tổng quan kết quả học tập, tín chỉ tích lũy, GPA.
+- **Đăng ký học phần:** Giao diện trực quan chọn lớp, kiểm tra lịch trùng trống.
+- **Thời khóa biểu:** Xem lịch học theo tuần.
+- **Kết quả học tập:** Theo dõi điểm số từng môn và bảng điểm tổng hợp.
+
+### 🛡️ Dành cho Quản trị viên (Admin Site)
+- **Tổng quan (Dashboard):** Thống kê số lượng sinh viên, khóa học, và đăng ký chờ duyệt.
+- **Quản lý Môn học:** Xem, thêm, sửa, xóa môn học và thiết lập môn tiên quyết.
+- **Quản lý Học kỳ:** Thiết lập học kỳ hiện tại, thời gian bắt đầu/kết thúc và thời gian mở đăng ký.
+- **Quản lý Lớp học phần:** Tạo lớp, phân công giảng viên và phòng học.
+- **Giám sát đăng ký (Enrollment Monitor):** Theo dõi và quản lý các yêu cầu đăng ký học phần của sinh viên.
 
 ## Công nghệ sử dụng
 
-- Runtime: Node.js
-- Framework: Express.js
-- ORM: Sequelize 6
-- Cơ sở dữ liệu: MySQL 8.0+ (hỗ trợ utf8mb4)
-- Xác thực: JWT và Bcrypt
-- Kiểm tra dữ liệu: Express-validator
-- Kiểm thử: Jest
+- **Frontend:** React 18, Vite, React Router DOM, Framer Motion (Animations), Lucide React (Icons), Vanilla CSS (Glassmorphism UI).
+- **Backend:** Node.js, Express.js.
+- **Database / ORM:** MySQL 8.0, Sequelize ORM.
+- **Security:** JWT (JSON Web Tokens) role-based authentication (Student/Admin), bcrypt mật khẩu.
 
-## Cấu trúc thư mục dự án
+## Hướng dẫn cài đặt và chạy thử
 
-```
-src/
-├── app.js                    # Cấu hình ứng dụng Express
-├── server.js                 # Điểm khởi đầu của máy chủ
-├── config/database.js        # Cấu hình kết nối Sequelize
-├── models/                   # Định nghĩa 6 mô hình dữ liệu Sequelize
-│   ├── Student.js
-│   ├── Course.js
-│   ├── Semester.js
-│   ├── Section.js
-│   ├── Schedule.js
-│   └── Enrollment.js
-├── services/                 # Xử lý logic nghiệp vụ (BR01-BR09)
-│   ├── auth.service.js
-│   ├── enrollment.service.js
-│   └── schedule.service.js
-├── controllers/              # Xử lý các yêu cầu từ API
-├── routes/                   # Khai báo các đường dẫn API
-├── middleware/               # Các hàm trung gian (xác thực, kiểm tra, lỗi)
-├── utils/                    # Các công cụ hỗ trợ (ApiError)
-├── seeders/seed.js           # Dữ liệu mẫu ban đầu
-└── migrations/migrate.js     # Trình chạy di cư cơ sở dữ liệu
-```
-
-## Hướng dẫn bắt đầu
-
-### 1. Yêu cầu hệ thống
-
-- Node.js phiên bản 18 trở lên
-- MySQL phiên bản 8.0 trở lên
-
-### 2. Cài đặt các gói phụ thuộc
-
+### 1. Cài đặt toàn bộ dependencies
+Từ thư mục gốc (root), chạy:
 ```bash
 npm install
 ```
 
-### 3. Cấu hình môi trường
-
+### 2. Cấu hình môi trường (Backend)
+Vào thư mục `server/` và tạo file `.env` tham khảo từ `.env.example`:
 ```bash
+cd server
 cp .env.example .env
-# Chỉnh sửa file .env với thông tin kết nối MySQL của bạn
 ```
+Cập nhật thông tin kết nối MySQL (DB_USER, DB_PASSWORD, DB_NAME, v.v.).
 
-### 4. Tạo cơ sở dữ liệu và bảng
-
-Cách 1: Chạy trực tiếp script SQL di cư:
+### 3. Thiết lập Cơ sở dữ liệu và Dữ liệu mẫu
+Khởi tạo cấu trúc bảng thông qua file `server/migrations/init.sql` vào MySQL của bạn, sau đó chạy lệnh seed để tạo dữ liệu mẫu và tài khoản test:
 ```bash
-mysql -u root -p < migrations/init.sql
+# Từ thư mục gốc
+npm run seed -w server
 ```
 
-Cách 2: Sử dụng trình chạy di cư tích hợp:
-```bash
-npm run migrate
-```
-
-Cách 3: Để Sequelize tự động đồng bộ (chỉ dành cho môi trường phát triển):
+### 4. Khởi động ứng dụng
+Từ thư mục gốc, hệ thống hỗ trợ chạy cả client và server song song:
 ```bash
 npm run dev
-# Các bảng sẽ được tự động tạo khi khởi động
 ```
+- **Frontend (Client):** http://localhost:5173
+- **Backend (API):** http://localhost:5000
 
-### 5. Nạp dữ liệu mẫu
+---
 
-```bash
-npm run seed
-```
+## 🔑 Tài khoản kiểm thử (Test Accounts)
 
-### 6. Khởi động máy chủ
+Sau khi chạy lệnh `npm run seed`, bạn có thể sử dụng các tài khoản sau để trải nghiệm hệ thống:
 
-```bash
-# Chế độ phát triển (tự động tải lại mã nguồn)
-npm run dev
-
-# Chế độ sản xuất
-npm start
-```
-
-Máy chủ sẽ chạy tại địa chỉ: http://localhost:3000
-
-## Danh sách các API Endpoints
-
-### Xác thực người dùng
-| Phương thức | Đường dẫn | Mô tả |
-|-------------|-----------|-------|
-| POST | /api/auth/register | Đăng ký sinh viên mới |
-| POST | /api/auth/login | Đăng nhập bằng email và mật khẩu |
-| GET | /api/auth/me | Lấy thông tin hồ sơ hiện tại (Yêu cầu Token) |
-
-### Quản lý sinh viên
-| Phương thức | Đường dẫn | Mô tả |
-|-------------|-----------|-------|
-| GET | /api/students | Danh sách tất cả sinh viên (Yêu cầu Token) |
-| GET | /api/students/:id | Lấy thông tin sinh viên theo ID (Yêu cầu Token) |
-| PUT | /api/students/:id | Cập nhật thông tin sinh viên (Yêu cầu Token) |
-
-### Quản lý môn học
-| Phương thức | Đường dẫn | Mô tả |
-|-------------|-----------|-------|
-| GET | /api/courses | Danh sách môn học (tìm kiếm, lọc) (Yêu cầu Token) |
-| GET | /api/courses/:id | Chi tiết môn học (Yêu cầu Token) |
-| POST | /api/courses | Tạo môn học mới (Yêu cầu Token) |
-| PUT | /api/courses/:id | Cập nhật thông tin môn học (Yêu cầu Token) |
-
-### Quản lý học kỳ
-| Phương thức | Đường dẫn | Mô tả |
-|-------------|-----------|-------|
-| GET | /api/semesters | Danh sách tất cả các học kỳ (Yêu cầu Token) |
-| GET | /api/semesters/current | Lấy thông tin học kỳ hiện tại (Yêu cầu Token) |
-| GET | /api/semesters/:id | Lấy học kỳ theo ID (Yêu cầu Token) |
-| POST | /api/semesters | Tạo học kỳ mới (Yêu cầu Token) |
-| PUT | /api/semesters/:id | Cập nhật học kỳ (Yêu cầu Token) |
-
-### Quản lý lớp học phần
-| Phương thức | Đường dẫn | Mô tả |
-|-------------|-----------|-------|
-| GET | /api/sections | Danh sách lớp học phần (Yêu cầu Token) |
-| GET | /api/sections/:id | Chi tiết lớp học phần và lịch học (Yêu cầu Token) |
-| POST | /api/sections | Tạo lớp học phần kèm lịch học (Yêu cầu Token) |
-| PUT | /api/sections/:id | Cập nhật thông tin lớp học phần (Yêu cầu Token) |
-
-### Đăng ký học phần
-| Phương thức | Đường dẫn | Mô tả |
-|-------------|-----------|-------|
-| POST | /api/enrollments | Đăng ký vào một lớp học phần (Yêu cầu Token) |
-| PUT | /api/enrollments/:id/cancel | Hủy đăng ký học phần (Yêu cầu Token) |
-| GET | /api/enrollments/my | Danh sách học phần đã đăng ký (Yêu cầu Token) |
-
-## Quy tắc nghiệp vụ
-
-### Quy tắc đăng ký (BR01-BR06)
-- BR01: Không cho phép đăng ký trùng lớp học phần (ràng buộc UNIQUE trong DB).
-- BR02: Không thể đăng ký khi lớp học phần đã đủ sĩ số.
-- BR03: Chỉ được phép đăng ký trong khung thời gian quy định của học kỳ.
-- BR04: Hệ thống tự động kiểm tra và ngăn chặn trùng lịch học.
-- BR05: Sinh viên có trạng thái bị đình chỉ (suspended) không được phép đăng ký.
-- BR06: Không thể đăng ký vào các lớp học phần đã bị hủy hoặc đã đóng.
-
-### Quy tắc hủy đăng ký (BR07-BR09)
-- BR07: Chỉ được phép hủy đăng ký trong khung thời gian quy định.
-- BR08: Số lượng sinh viên hiện tại của lớp sẽ tự động giảm khi có sinh viên hủy thành công.
-- BR09: Dữ liệu đăng ký được lưu vết (soft delete), trạng thái chuyển sang 'cancelled'.
-
-## Kiểm thử
-
-```bash
-npm test
-```
-
-Chạy bộ kiểm thử đơn vị cho logic phát hiện trùng lịch học (gồm 20 trường hợp kiểm thử).
-
-## Tài khoản dùng thử (Sau khi nạp dữ liệu mẫu)
-
-| Email | Mật khẩu | Trạng thái |
-|-------|----------|------------|
-| an.nguyen@student.edu.vn | 123456 | Đang học |
-| binh.tran@student.edu.vn | 123456 | Đang học |
-| cuong.le@student.edu.vn | 123456 | Đang học |
-| duc.pham@student.edu.vn | 123456 | Đã tốt nghiệp |
-| em.hoang@student.edu.vn | 123456 | Bị đình chỉ |
-
-## Giấy phép
-
-ISC
+|Account|password|Role|
+|20IT005|123456|Student|
+|21BA001|123456|Student|
+|21BA002|123456|Student|
+|21IT001|123456|Student|
+|21IT002|123456|Student|
+|21IT003|123456|Student|
+|22CS001|123456|Student|
+|22EE001|123456|Student|
+|22SE001|123456|Student|
+|23IT001|123456|Student|
+|ADMIN001|123456|Admin|
+|ADMIN002|123456|Admin|
