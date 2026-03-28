@@ -1,14 +1,14 @@
 -- ============================================================
 -- Web Quản Lý & Đăng Ký Học Phần
--- Database: learning_system
+-- Database: course_management
 -- Charset: utf8mb4 (hỗ trợ tiếng Việt đầy đủ)
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS learning_system
+CREATE DATABASE IF NOT EXISTS course_management
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE learning_system;
+USE course_management;
 
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS results;
@@ -40,8 +40,7 @@ CREATE TABLE IF NOT EXISTS students (
 
   INDEX idx_students_status (status),
   INDEX idx_students_major (major)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-  COMMENT='Thông tin sinh viên';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- ──────────────────────────────────────
@@ -67,8 +66,7 @@ CREATE TABLE IF NOT EXISTS courses (
 
   INDEX idx_courses_department (department),
   INDEX idx_courses_active (is_active)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-  COMMENT='Danh mục môn học';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- ──────────────────────────────────────
@@ -93,8 +91,7 @@ CREATE TABLE IF NOT EXISTS semesters (
 
   INDEX idx_semesters_current (is_current),
   INDEX idx_semesters_year (academic_year)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-  COMMENT='Quản lý học kỳ';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- ──────────────────────────────────────
@@ -129,8 +126,7 @@ CREATE TABLE IF NOT EXISTS sections (
   INDEX idx_sections_course (course_id),
   INDEX idx_sections_semester (semester_id),
   INDEX idx_sections_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-  COMMENT='Lớp học phần';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- ──────────────────────────────────────
@@ -159,13 +155,12 @@ CREATE TABLE IF NOT EXISTS schedules (
 
   INDEX idx_schedules_section (section_id),
   INDEX idx_schedules_day (day_of_week)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-  COMMENT='Thời khóa biểu';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- ──────────────────────────────────────
 -- 6. Bảng: enrollments (Đăng ký học phần)
--- 
+-- ──────────────────────────────────────
 CREATE TABLE IF NOT EXISTS enrollments (
   enrollment_id INT AUTO_INCREMENT NOT NULL,
   student_id    VARCHAR(10)        NOT NULL,
@@ -192,8 +187,7 @@ CREATE TABLE IF NOT EXISTS enrollments (
   INDEX idx_enrollments_student (student_id),
   INDEX idx_enrollments_section (section_id),
   INDEX idx_enrollments_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-  COMMENT='Đăng ký học phần';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- ──────────────────────────────────────
 -- 7. Bảng: results (Kết quả học tập)
 -- ──────────────────────────────────────
@@ -202,11 +196,11 @@ CREATE TABLE IF NOT EXISTS results (
   student_id    VARCHAR(10)        NOT NULL,
   course_id     VARCHAR(10)        NOT NULL,
   semester_id   INT                NOT NULL,
-  midterm_score DECIMAL(4, 2)      DEFAULT NULL COMMENT 'Điểm giữa kỳ',
-  final_score   DECIMAL(4, 2)      DEFAULT NULL COMMENT 'Điểm cuối kỳ',
-  total_score   DECIMAL(4, 2)      DEFAULT NULL COMMENT 'Điểm tổng kết (hệ 10)',
-  grade_letter  VARCHAR(2)         DEFAULT NULL COMMENT 'Điểm chữ (A, B, C, D, F)',
-  status        ENUM('pass', 'fail', 'studying') NOT NULL DEFAULT 'studying' COMMENT 'Trạng thái (Đạt, Không đạt, Đang học)',
+  midterm_score DECIMAL(4, 2)      DEFAULT NULL ,
+  final_score   DECIMAL(4, 2)      DEFAULT NULL ,
+  total_score   DECIMAL(4, 2)      DEFAULT NULL ,
+  grade_letter  VARCHAR(2)         DEFAULT NULL ,
+  status        ENUM('pass', 'fail', 'studying') NOT NULL DEFAULT 'studying',
   created_at    DATETIME           NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at    DATETIME           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
@@ -231,6 +225,5 @@ CREATE TABLE IF NOT EXISTS results (
 
   INDEX idx_results_student (student_id),
   INDEX idx_results_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-  COMMENT='Kết quả học tập';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

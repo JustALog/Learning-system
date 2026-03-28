@@ -1,5 +1,5 @@
 {
-  "name": "learning-system-monorepo",
+  "name": "course_management",
   "version": "1.0.0",
   "private": true,
   "workspaces": [

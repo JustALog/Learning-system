@@ -1,5 +1,5 @@
 {
-  "name": "learning-system",
+  "name": "course_management",
   "version": "1.0.0",
   "description": "Web Quản Lý & Đăng Ký Học Phần - Backend API",
   "main": "src/server.js",

@@ -1,6 +1,6 @@
 # Hệ thống Quản lý và Đăng ký Học phần
 
-Hệ thống cung cấp nền tảng toàn diện cho sinh viên đăng ký môn học và quản trị viên quản lý đào tạo, sử dụng kiến trúc Monorepo với Frontend (React/Vite) và Backend API (Node.js/Express).
+Hệ thống cung cấp nền tảng toàn diện cho sinh viên đăng ký môn học và quản trị viên quản lý đào tạo s
 
 ## Cấu trúc dự án
 
@@ -71,7 +71,8 @@ npm run dev
 
 Sau khi chạy lệnh `npm run seed`, bạn có thể sử dụng các tài khoản sau để trải nghiệm hệ thống:
 
-|Account|password|Role|
+|Account|Password|Role|
+|-------|--------|----|
 |20IT005|123456|Student|
 |21BA001|123456|Student|
 |21BA002|123456|Student|
