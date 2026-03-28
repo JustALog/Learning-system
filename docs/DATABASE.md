@@ -1,7 +1,5 @@
 # Tài liệu Cơ sở dữ liệu - Hệ thống Quản lý và Đăng ký Học phần
 
-Phiên bản: 1.0  
-Ngày cập nhật: 23/03/2026  
 Hệ quản trị cơ sở dữ liệu: MySQL 8.0+ / MariaDB 10.6+  
 Bộ mã ký tự: utf8mb4 | Đối sánh: utf8mb4_unicode_ci
 
@@ -297,6 +295,312 @@ Ghi nhận kết quả học tập, điểm số và xếp loại của sinh vi�
 | final_score | DECIMAL(5,2) | - | Không | NULL | Điểm cuối kỳ (0-10) |
 | total_score | DECIMAL(5,2) | - | Không | NULL | Tổng điểm (0-10) |
 | letter_grade | VARCHAR(2) | - | Không | NULL | Xếp loại: A, B+, B, C+, C, D+, D, F |
+
+---
+
+## 4. Quan hệ và Khóa ngoại
+
+### Quan hệ một-nhiều (1:N)
+
+| Bảng cha | Bảng con | Quan hệ | Ghi chú |
+|----------|----------|---------|--------|
+| students | enrollments | 1:N | Một sinh viên có nhiều đơn đăng ký |
+| students | results | 1:N | Một sinh viên có nhiều kết quả |
+| courses | sections | 1:N | Một môn học có nhiều lớp học phần |
+| courses | results | 1:N | Một môn học có nhiều kết quả |
+| semesters | sections | 1:N | Một học kỳ có nhiều lớp học phần |
+| semesters | results | 1:N | Một học kỳ có nhiều kết quả |
+| sections | schedules | 1:N | Một lớp có nhiều lịch học |
+| sections | enrollments | 1:N | Một lớp có nhiều đơn đăng ký |
+| sections | results | 1:N | Một lớp có nhiều kết quả |
+| admins | sections | 1:N | Một admin quản lý nhiều lớp |
+
+### Tham chiếu tự (Self-Reference)
+
+- **courses.prerequisite_id → courses.course_id**: Một môn học có thể yêu cầu hoàn thành 1 môn tiên quyết
+
+---
+
+## 5. Chỉ mục (Indexes)
+
+### Indexes quan trọng để tối ưu hóa truy vấn
+
+```sql
+-- Students
+CREATE INDEX idx_student_email ON students(email);
+CREATE INDEX idx_student_status ON students(status);
+CREATE INDEX idx_student_major ON students(major);
+
+-- Admins
+CREATE INDEX idx_admin_email ON admins(email);
+CREATE INDEX idx_admin_role ON admins(role);
+
+-- Courses
+CREATE INDEX idx_course_status ON courses(is_active);
+CREATE INDEX idx_course_prereq ON courses(prerequisite_id);
+
+-- Sections
+CREATE INDEX idx_section_course ON sections(course_id);
+CREATE INDEX idx_section_semester ON sections(semester_id);
+CREATE INDEX idx_section_status ON sections(status);
+CREATE INDEX idx_section_code ON sections(section_code);
+
+-- Schedules
+CREATE INDEX idx_schedule_section ON schedules(section_id);
+CREATE INDEX idx_schedule_day ON schedules(day_of_week);
+
+-- Enrollments
+CREATE INDEX idx_enrollment_student ON enrollments(student_id);
+CREATE INDEX idx_enrollment_section ON enrollments(section_id);
+CREATE INDEX idx_enrollment_status ON enrollments(status);
+CREATE UNIQUE INDEX idx_enrollment_unique ON enrollments(student_id, section_id);
+
+-- Results
+CREATE INDEX idx_result_student ON results(student_id);
+CREATE INDEX idx_result_course ON results(course_id);
+CREATE INDEX idx_result_semester ON results(semester_id);
+CREATE INDEX idx_result_section ON results(section_id);
+```
+
+---
+
+## 6. Quy tắc nghiệp vụ và Ràng buộc
+
+### Ràng buộc Unique
+
+- `students.email` - Email duy nhất cho mỗi sinh viên
+- `admins.email` - Email duy nhất cho mỗi admin
+- `sections.section_code` - Mã lớp duy nhất
+- `courses.course_id` - Mã môn học duy nhất
+- `enrollments(student_id, section_id)` - Không cho phép sinh viên đăng ký 2 lần cùng 1 lớp
+
+### Ràng buộc Foreign Key (Referential Integrity)
+
+- Khi xóa một học kỳ, tất cả sections, enrollments, results liên quan sẽ bị xóa theo
+- Khi xóa một môn học, tất cả sections, results liên quan sẽ bị xóa theo
+- Khóa ngoại sử dụng `ON DELETE CASCADE` và `ON UPDATE CASCADE`
+
+### Quy tắc Check (CHECK Constraints)
+
+```sql
+-- Giới hạn số lượng sinh viên
+ALTER TABLE sections ADD CONSTRAINT check_max_students 
+  CHECK (max_students > 0 AND current_students <= max_students);
+
+-- Kiểm tra điểm hợp lệ
+ALTER TABLE results ADD CONSTRAINT check_score 
+  CHECK (midterm_score BETWEEN 0 AND 10 AND final_score BETWEEN 0 AND 10);
+
+-- Kiểm tra thứ học
+ALTER TABLE schedules ADD CONSTRAINT check_day_of_week 
+  CHECK (day_of_week BETWEEN 2 AND 8);
+
+-- Kiểm tra tiết học 
+ALTER TABLE schedules ADD CONSTRAINT check_periods 
+  CHECK (start_period > 0 AND end_period <= 12 AND start_period <= end_period);
+```
+
+---
+
+## 7. Hướng dẫn triển khai di cư (Migration)
+
+### Khởi tạo cơ sở dữ liệu
+
+**Cách 1: Chạy script SQL trực tiếp**
+
+```bash
+# Với MySQL CLI
+mysql -u root -p < migrations/init.sql
+
+# Hoặc từ trong MySQL
+mysql> source /path/to/migrations/init.sql;
+```
+
+**Cách 2: Sử dụng Application Migration Runner**
+
+```bash
+cd server
+npm run migrate
+```
+
+**Cách 3: Sequelize Auto-Sync (Development only)**
+
+```bash
+npm run dev
+# Sequelize sẽ tự động tạo bảng nếu chưa tồn tại
+```
+
+### Kiểm tra migration thành công
+
+```bash
+mysql -u root -p course_management -e "SHOW TABLES;"
+```
+
+Output mong đợi:
+```
++---------------------------+
+| Tables_in_course_management |
++---------------------------+
+| admins                    |
+| courses                   |
+| enrollments               |
+| results                   |
+| schedules                 |
+| sections                  |
+| semesters                 |
+| students                  |
++---------------------------+
+```
+
+### Nạp dữ liệu mẫu
+
+```bash
+cd server
+npm run seed
+```
+
+Dữ liệu mẫu bao gồm:
+- 10+ sinh viên (các khóa khác nhau)
+- 2 quản trị viên
+- 15+ môn học
+- 2 học kỳ (hiện tại + tương lai)
+- Các lớp học phần và lịch học
+- Dữ liệu đăng ký mẫu
+
+---
+
+## 8. Dữ liệu mẫu khởi tạo
+
+### Bảng Students (Sinh viên)
+
+| student_id | full_name | email | major | academic_year | status |
+|------------|-----------|-------|-------|---------------|--------|
+| 20IT005 | Nguyễn Văn A | a@university.edu | Information Technology | 2020 | active |
+| 21IT001 | Trần Thị B | b@university.edu | Information Technology | 2021 | active |
+| 22CS001 | Lê Văn C | c@university.edu | Computer Science | 2022 | active |
+| 23IT001 | Phạm Thị D | d@university.edu | Information Technology | 2023 | active |
+
+### Bảng Courses (Môn học)
+
+| course_id | course_name | credits | department | prerequisite_id |
+|-----------|-------------|---------|-----------|---------------|
+| IT101 | Lập trình Python | 3 | CNTT | NULL |
+| IT102 | Cấu trúc dữ liệu | 4 | CNTT | IT101 |
+| IT201 | Cơ sở dữ liệu | 4 | CNTT | IT102 |
+| IT301 | Web Development | 3 | CNTT | IT201 |
+
+### Bảng Semesters (Học kỳ)
+
+| semester_id | semester_name | academic_year | semester_number | is_current |
+|-------------|---------------|---------------|-----------------|----------|
+| 1 | HK1 2024-2025 | 2024-2025 | 1 | TRUE |
+| 2 | HK2 2024-2025 | 2024-2025 | 2 | FALSE |
+
+### Ví dụ Truy vấn Phổ biến
+
+**1. Lấy danh sách sinh viên đã đăng ký một môn học**
+
+```sql
+SELECT DISTINCT s.student_id, s.full_name, s.email
+FROM students s
+JOIN enrollments e ON s.student_id = e.student_id
+JOIN sections sec ON e.section_id = sec.section_id
+WHERE sec.course_id = 'IT101' 
+AND e.status = 'enrolled';
+```
+
+**2. Lấy thời khóa biểu của sinh viên**
+
+```sql
+SELECT c.course_name, sch.day_of_week, sch.start_period, sch.end_period, 
+       sch.room, s.section_code
+FROM students st
+JOIN enrollments e ON st.student_id = e.student_id
+JOIN sections s ON e.section_id = s.section_id
+JOIN courses c ON s.course_id = c.course_id
+JOIN schedules sch ON s.section_id = sch.section_id
+WHERE st.student_id = '21IT001' 
+AND e.status = 'enrolled'
+ORDER BY sch.day_of_week, sch.start_period;
+```
+
+**3. Kiểm tra lịch trùng**
+
+```sql
+SELECT s1.course_id, s2.course_id
+FROM enrollments e1
+JOIN sections s1 ON e1.section_id = s1.section_id
+JOIN schedules sch1 ON s1.section_id = sch1.section_id
+JOIN enrollments e2 ON e1.student_id = e2.student_id
+JOIN sections s2 ON e2.section_id = s2.section_id
+JOIN schedules sch2 ON s2.section_id = sch2.section_id
+WHERE e1.student_id = '21IT001'
+AND sch1.day_of_week = sch2.day_of_week
+AND sch1.start_period = sch2.start_period
+AND s1.section_id != s2.section_id
+AND e1.status = 'enrolled'
+AND e2.status = 'enrolled';
+```
+
+**4. Lấy kết quả học tập của sinh viên**
+
+```sql
+SELECT c.course_name, r.midterm_score, r.final_score, r.total_score, r.letter_grade
+FROM results r
+JOIN students s ON r.student_id = s.student_id
+JOIN courses c ON r.course_id = c.course_id
+JOIN semesters sem ON r.semester_id = sem.semester_id
+WHERE s.student_id = '21IT001'
+ORDER BY sem.academic_year DESC, sem.semester_number DESC;
+```
+
+**5. Thống kê sĩ số lớp**
+
+```sql
+SELECT sec.section_code, c.course_name, 
+       COUNT(CASE WHEN e.status = 'enrolled' THEN 1 END) as current_count,
+       sec.max_students,
+       ROUND(COUNT(CASE WHEN e.status = 'enrolled' THEN 1 END) * 100.0 / sec.max_students, 2) as occupancy_percent
+FROM sections sec
+JOIN courses c ON sec.course_id = c.course_id
+LEFT JOIN enrollments e ON sec.section_id = e.section_id
+GROUP BY sec.section_id, sec.section_code, c.course_name, sec.max_students
+ORDER BY occupancy_percent DESC;
+```
+
+---
+
+## Backup & Restore
+
+### Tạo bản sao lưu
+
+```bash
+# Full database backup
+mysqldump -u root -p course_management > backup_$(date +%Y%m%d_%H%M%S).sql
+
+# Specific table
+mysqldump -u root -p course_management students > students_backup.sql
+```
+
+### Khôi phục từ bản sao lưu
+
+```bash
+# Restore full database
+mysql -u root -p course_management < backup_20260328_120000.sql
+
+# Restore specific table
+mysql -u root -p course_management < students_backup.sql
+```
+
+---
+
+## Performance Tips
+
+1. **Pagination:** Luôn sử dụng LIMIT/OFFSET cho danh sách lớn
+2. **Indexes:** Các trường được tìm kiếm thường xuyên cần có index
+3. **Query Optimization:** Tránh SELECT *, chỉ lấy cột cần thiết
+4. **Connection Pooling:** Database connection được quản lý qua pool
+5. **Caching:** Kết quả frequently-accessed có thể được cache
 
 ---
 

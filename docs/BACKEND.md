@@ -1,6 +1,7 @@
 # Web Quản lý và Đăng ký Học phần - Backend API
 
-Hệ thống quản lý và đăng ký học phần dành cho sinh viên, được phát triển bằng Node.js, Express, Sequelize ORM và cơ sở dữ liệu MySQL.
+
+Hệ thống quản lý và đăng ký học phần dành cho sinh viên, được phát triển bằng Node.js, Express, Sequelize ORM và cơ sở dữ liệu MySQL. Cung cấp đầy đủ API endpoints cho sinh viên và quản trị viên.
 
 ## Công nghệ sử dụng
 
@@ -98,6 +99,7 @@ mysql -u root -p < migrations/init.sql
 
 Cách 2: Sử dụng trình chạy di cư tích hợp:
 ```bash
+cd server
 npm run migrate
 ```
 
@@ -187,3 +189,151 @@ Máy chủ sẽ chạy tại địa chỉ: http://localhost:3000
 - BR07: Chỉ được phép hủy đăng ký trong khung thời gian quy định.
 - BR08: Số lượng sinh viên hiện tại của lớp sẽ tự động giảm khi có sinh viên hủy thành công.
 - BR09: Dữ liệu đăng ký được lưu vết (soft delete), trạng thái chuyển sang 'cancelled'.
+
+## Authentication & Authorization
+
+### JWT Token Structure
+```json
+{
+  "sub": "user_id",
+  "role": "student|admin",
+  "email": "user@example.com",
+  "iat": 1234567890,
+  "exp": 1234567890
+}
+```
+
+### Header Requirements
+Tất cả authenticated requests cần header:
+```
+Authorization: Bearer <jwt_token>
+```
+
+### Role-based Permissions
+- **Student:** Chỉ truy cập dữ liệu cá nhân, đăng ký học phần, xem công khai
+- **Admin:** Quản lý toàn bộ hệ thống (môn học, học kỳ, lớp, kết quả)
+
+## Error Handling
+
+Tất cả API trả về consistent error format:
+
+### Success Response (200)
+```json
+{
+  "success": true,
+  "message": "Operation successful",
+  "data": { ... }
+}
+```
+
+### Error Response (4xx/5xx)
+```json
+{
+  "success": false,
+  "message": "Error description",
+  "errorCode": "ERROR_CODE",
+  "statusCode": 400
+}
+```
+
+### Common HTTP Status Codes
+- `200 OK` - Successful request
+- `201 Created` - Resource created successfully
+- `400 Bad Request` - Invalid input or request format
+- `401 Unauthorized` - Missing or invalid JWT token
+- `403 Forbidden` - Insufficient permissions
+- `404 Not Found` - Resource not found
+- `409 Conflict` - Business rule violation (e.g., duplicate enrollment)
+- `500 Internal Server Error` - Server error
+
+## Environment Variables (.env)
+
+```env
+# Server Configuration
+PORT=5000
+NODE_ENV=development
+
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=course_management
+DB_DIALECT=mysql
+
+# JWT Configuration
+JWT_SECRET=your_jwt_secret_key_here
+JWT_EXPIRES_IN=7d
+
+# CORS Configuration
+CORS_ORIGIN=http://localhost:5173
+```
+
+## Development Commands
+
+```bash
+# Install dependencies
+npm install
+
+# Run migrations
+npm run migrate
+
+# Seed initial data
+npm run seed
+
+# Development mode (with auto-restart)
+npm run dev
+
+# Production mode
+npm start
+
+# Run linter
+npm run lint
+```
+
+## API Response Examples
+
+### Successful Login
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIs...",
+    "user": {
+      "id": "21IT001",
+      "email": "student@example.com",
+      "role": "student",
+      "full_name": "Nguyễn Văn A"
+    }
+  }
+}
+```
+
+### Failed Enrollment (Schedule Conflict)
+```json
+{
+  "success": false,
+  "message": "Schedule conflict with another enrolled course",
+  "errorCode": "SCHEDULE_CONFLICT",
+  "statusCode": 409
+}
+```
+
+## Performance Considerations
+
+- Tất cả API endpoints có pagination support (limit, offset)
+- Database queries được optimize với proper indexes
+- Caching enabled cho danh sách môn học, học kỳ
+- Connection pooling: default pool size = 5
+
+## Deployment Checklist
+
+- [ ] Cấu hình `.env` với production values
+- [ ] Tạo database và chạy migrations
+- [ ] Kích hoạt SSL/TLS
+- [ ] Cấu hình CORS cho frontend domain
+- [ ] Setup PM2 hoặc Docker container
+- [ ] Cấu hình log rotation
+- [ ] Backup database hàng ngày
+- [ ] Monitor error logs và performance
