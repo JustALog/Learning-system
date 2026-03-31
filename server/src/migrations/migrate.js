@@ -1,10 +1,3 @@
-/**
- * Programmatic migration runner
- * Usage: npm run migrate
- *
- * This reads and executes the init.sql file against the configured database.
- * For production, consider using Sequelize CLI migrations.
- */
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');

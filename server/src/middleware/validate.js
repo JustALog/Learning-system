@@ -12,7 +12,7 @@ const validate = (req, res, next) => {
       field: err.path,
       message: err.msg,
     }));
-    throw ApiError.badRequest('Validation failed', extractedErrors);
+    return next(ApiError.badRequest('Validation failed', extractedErrors));
   }
   next();
 };

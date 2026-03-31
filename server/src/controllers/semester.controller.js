@@ -2,9 +2,7 @@ const { Semester } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 class SemesterController {
-  /**
-   * GET /api/semesters
-   */
+  // GET /api/semesters
   async getAll(req, res, next) {
     try {
       const semesters = await Semester.findAll({
@@ -20,9 +18,7 @@ class SemesterController {
     }
   }
 
-  /**
-   * GET /api/semesters/current
-   */
+  // GET /api/semesters/current
   async getCurrent(req, res, next) {
     try {
       const semester = await Semester.findOne({
@@ -42,9 +38,7 @@ class SemesterController {
     }
   }
 
-  /**
-   * GET /api/semesters/:id
-   */
+  // GET /api/semesters/:id
   async getById(req, res, next) {
     try {
       const semester = await Semester.findByPk(req.params.id);
@@ -61,9 +55,7 @@ class SemesterController {
     }
   }
 
-  /**
-   * POST /api/semesters
-   */
+  // POST /api/semesters
   async create(req, res, next) {
     try {
       const semester = await Semester.create(req.body);
@@ -77,9 +69,7 @@ class SemesterController {
     }
   }
 
-  /**
-   * PUT /api/semesters/:id
-   */
+  // PUT /api/semesters/:id
   async update(req, res, next) {
     try {
       const semester = await Semester.findByPk(req.params.id);

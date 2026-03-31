@@ -1,6 +1,8 @@
 const express = require('express');
 const semesterController = require('../controllers/semester.controller');
 const { authenticate } = require('../middleware/auth.middleware');
+const { validate } = require('../middleware/validate');
+const { semesterSchema, updateSemesterSchema } = require('../validations/semester.validation');
 
 const router = express.Router();
 
@@ -16,9 +18,9 @@ router.get('/current', semesterController.getCurrent);
 router.get('/:id', semesterController.getById);
 
 /// POST /api/semesters
-router.post('/', semesterController.create);
+router.post('/', semesterSchema, validate, semesterController.create);
 
 /// PUT /api/semesters/:id
-router.put('/:id', semesterController.update);
+router.put('/:id', updateSemesterSchema, validate, semesterController.update);
 
 module.exports = router;

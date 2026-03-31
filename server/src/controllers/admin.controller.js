@@ -85,6 +85,17 @@ class AdminController {
     }
   }
 
+  async deleteSemester(req, res, next) {
+    try {
+      const { id } = req.params;
+      const deleted = await Semester.destroy({ where: { semester_id: id } });
+      if (!deleted) throw ApiError.notFound('Semester not found');
+      res.status(200).json({ success: true, message: 'Semester deleted successfully' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // --- Section Management ---
   async getAllSections(req, res, next) {
     try {

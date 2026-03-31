@@ -2,9 +2,7 @@ const { Student } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 class StudentController {
-  /**
-   * GET /api/students
-   */
+  // GET /api/students
   async getAll(req, res, next) {
     try {
       const { page = 1, limit = 20, status, major } = req.query;
@@ -39,9 +37,8 @@ class StudentController {
     }
   }
 
-  /**
-   * GET /api/students/me
-   */
+  
+  // GET /api/students/me
   async getMe(req, res, next) {
     try {
       // req.user is already populated by authenticate middleware
@@ -54,9 +51,8 @@ class StudentController {
     }
   }
 
-  /**
-   * GET /api/students/:id
-   */
+  
+  // GET /api/students/:id
   async getById(req, res, next) {
     try {
       const student = await Student.findByPk(req.params.id, {
@@ -76,9 +72,8 @@ class StudentController {
     }
   }
 
-  /**
-   * PUT /api/students/:id
-   */
+  
+  // PUT /api/students/:id
   async update(req, res, next) {
     try {
       const student = await Student.findByPk(req.params.id);
@@ -109,9 +104,8 @@ class StudentController {
     }
   }
 
-  /**
-   * GET /api/students/:id/stats
-   */
+  
+  // GET /api/students/:id/stats
   async getStats(req, res, next) {
     try {
       const studentId = req.params.id;
@@ -164,9 +158,8 @@ class StudentController {
     }
   }
 
-  /**
-   * GET /api/students/:id/schedule
-   */
+  
+  // GET /api/students/:id/schedule
   async getSchedule(req, res, next) {
     try {
       const studentId = req.params.id;

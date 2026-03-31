@@ -2,9 +2,7 @@ const { Section, Course, Semester, Schedule } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 class SectionController {
-  /**
-   * GET /api/sections
-   */
+  // GET /api/sections
   async getAll(req, res, next) {
     try {
       const {
@@ -62,9 +60,7 @@ class SectionController {
     }
   }
 
-  /**
-   * GET /api/sections/:id
-   */
+  // GET /api/sections/:id
   async getById(req, res, next) {
     try {
       const section = await Section.findByPk(req.params.id, {
@@ -88,9 +84,7 @@ class SectionController {
     }
   }
 
-  /**
-   * POST /api/sections
-   */
+  // POST /api/sections
   async create(req, res, next) {
     try {
       const { schedules, ...sectionData } = req.body;
@@ -125,9 +119,7 @@ class SectionController {
     }
   }
 
-  /**
-   * PUT /api/sections/:id
-   */
+  // PUT /api/sections/:id
   async update(req, res, next) {
     try {
       const section = await Section.findByPk(req.params.id);
@@ -162,6 +154,30 @@ class SectionController {
         success: true,
         message: 'Cập nhật lớp học phần thành công',
         data: { section: result },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // DELETE /api/sections/:id
+  async delete(req, res, next) {
+    try {
+      const { id } = req.params;
+      
+      // Delete schedules associated with this section
+      await Schedule.destroy({ where: { section_id: id } });
+      
+      // Delete the section
+      const deleted = await Section.destroy({ where: { section_id: id } });
+      
+      if (!deleted) {
+        throw ApiError.notFound('Lớp học phần không tồn tại');
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Xóa lớp học phần thành công',
       });
     } catch (error) {
       next(error);

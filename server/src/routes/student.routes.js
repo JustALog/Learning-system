@@ -1,6 +1,8 @@
 const express = require('express');
 const studentController = require('../controllers/student.controller');
 const { authenticate, authorizeSelf } = require('../middleware/auth.middleware');
+const { validate } = require('../middleware/validate');
+const { updateStudentSchema } = require('../validations/student.validation');
 
 const router = express.Router();
 
@@ -26,7 +28,7 @@ router.use('/:id', authorizeSelf);
 // GET /api/students/:id
 router.get('/:id', studentController.getById);
 // PUT /api/students/:id
-router.put('/:id', studentController.update);
+router.put('/:id', updateStudentSchema, validate, studentController.update);
 // GET /api/students/:id/stats
 router.get('/:id/stats', studentController.getStats);
 // GET /api/students/:id/schedule

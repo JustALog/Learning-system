@@ -7,12 +7,13 @@ const PORT = process.env.PORT || 3000;
 
 async function startServer() {
   try {
+    // Validate required environment variables
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET environment variable is required');
+    }
+
     // Test database connection
     console.log('Attempting to connect to database...');
-    console.log(`DB_HOST: ${process.env.DB_HOST}`);
-    console.log(`DB_USER: ${process.env.DB_USER}`);
-    console.log(`DB_NAME: ${process.env.DB_NAME}`);
-    console.log(`DB_PASS: ${process.env.DB_PASS}`);
 
     await sequelize.authenticate();
     console.log('Database connection established successfully.');

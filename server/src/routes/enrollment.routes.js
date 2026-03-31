@@ -9,9 +9,7 @@ const router = express.Router();
 // All enrollment routes require authentication
 router.use(authenticate);
 
-/**
- * POST /api/enrollments - Đăng ký học phần
- */
+// POST /api/enrollments - Đăng ký học phần
 router.post(
   '/',
   [
@@ -23,9 +21,7 @@ router.post(
   enrollmentController.enroll
 );
 
-/**
- * PUT /api/enrollments/:id/cancel - Hủy đăng ký
- */
+// PUT /api/enrollments/:id/cancel - Hủy đăng ký
 router.put(
   '/:id/cancel',
   [
@@ -38,9 +34,7 @@ router.put(
   enrollmentController.cancel
 );
 
-/**
- * GET /api/enrollments/my - Lấy danh sách đăng ký của sinh viên
- */
+// GET /api/enrollments/my - Lấy danh sách đăng ký của sinh viên
 router.get('/my', enrollmentController.getMyEnrollments);
 
 module.exports = router;

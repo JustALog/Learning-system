@@ -2,10 +2,7 @@ const { Result, Course, Semester } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 class ResultController {
-  /**
-   * GET /api/results/my
-   * Lấy kết quả học tập của sinh viên đang đăng nhập
-   */
+  /// GET /api/results/my : Lấy kết quả học tập của sinh viên đang đăng nhập
   async getMyResults(req, res, next) {
     try {
       const studentId = req.user.student_id;
@@ -46,10 +43,7 @@ class ResultController {
     }
   }
 
-  /**
-   * GET /api/results/stats
-   * Lấy thống kê điểm số (GPA, tín chỉ tích lũy)
-   */
+  /// GET /api/results/stats : Lấy thống kê điểm số (GPA, tín chỉ tích lũy)
   async getMyResultStats(req, res, next) {
     try {
       const studentId = req.user.student_id;

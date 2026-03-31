@@ -105,6 +105,10 @@ class AuthService {
    * Generate JWT token
    */
   _generateToken(user, role) {
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET environment variable is not configured');
+    }
+
     const payload = {
       userId: role === 'admin' ? user.admin_id : user.student_id,
       email: user.email,

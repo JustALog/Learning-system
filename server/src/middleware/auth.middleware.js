@@ -8,6 +8,10 @@ const { Student, Admin } = require('../models');
  */
 const authenticate = async (req, res, next) => {
   try {
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET environment variable is not configured');
+    }
+
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {

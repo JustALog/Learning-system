@@ -14,13 +14,13 @@ Hệ thống cung cấp nền tảng toàn diện cho sinh viên đăng ký môn
 
 ## Các tính năng chính
 
-### 🎓 Dành cho Sinh viên (Student Portal)
+### Dành cho Sinh viên (Student Portal)
 - **Dashboard:** Tổng quan kết quả học tập, tín chỉ tích lũy, GPA.
 - **Đăng ký học phần:** Giao diện trực quan chọn lớp, kiểm tra lịch trùng trống.
 - **Thời khóa biểu:** Xem lịch học theo tuần.
 - **Kết quả học tập:** Theo dõi điểm số từng môn và bảng điểm tổng hợp.
 
-### 🛡️ Dành cho Quản trị viên (Admin Site)
+### Dành cho Quản trị viên (Admin Site)
 - **Tổng quan (Dashboard):** Thống kê số lượng sinh viên, khóa học, và đăng ký chờ duyệt.
 - **Quản lý Môn học:** Xem, thêm, sửa, xóa môn học và thiết lập môn tiên quyết.
 - **Quản lý Học kỳ:** Thiết lập học kỳ hiện tại, thời gian bắt đầu/kết thúc và thời gian mở đăng ký.

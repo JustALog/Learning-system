@@ -327,13 +327,3 @@ npm run lint
 - Caching enabled cho danh sách môn học, học kỳ
 - Connection pooling: default pool size = 5
 
-## Deployment Checklist
-
-- [ ] Cấu hình `.env` với production values
-- [ ] Tạo database và chạy migrations
-- [ ] Kích hoạt SSL/TLS
-- [ ] Cấu hình CORS cho frontend domain
-- [ ] Setup PM2 hoặc Docker container
-- [ ] Cấu hình log rotation
-- [ ] Backup database hàng ngày
-- [ ] Monitor error logs và performance

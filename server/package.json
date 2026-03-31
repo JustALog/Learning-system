@@ -1,7 +1,7 @@
 {
   "name": "course_management",
   "version": "1.0.0",
-  "description": "Web Quản Lý & Đăng Ký Học Phần - Backend API",
+  "description": "Web Quản Lý & Đăng Ký Học Phần",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -22,6 +22,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
+    "express-rate-limit": "^7.1.5",
     "express-validator": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.0",

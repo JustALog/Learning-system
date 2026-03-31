@@ -1,14 +1,13 @@
 const express = require('express');
 const { body } = require('express-validator');
+const rateLimit = require('express-rate-limit');
 const { validate } = require('../middleware/validate');
 const authController = require('../controllers/auth.controller');
 const { authenticate } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
-/**
- * POST /api/auth/register
- */
+// POST /api/auth/register
 router.post(
   '/register',
   [
@@ -45,11 +44,10 @@ router.post(
   authController.register
 );
 
-/**
- * POST /api/auth/login
- */
+// POST /api/auth/login
 router.post(
   '/login',
+  // authLimiter,
   [
     body('identifier').trim().notEmpty().withMessage('Mã đăng nhập là bắt buộc'),
     body('password').notEmpty().withMessage('Mật khẩu là bắt buộc'),
@@ -59,9 +57,7 @@ router.post(
   authController.login
 );
 
-/**
- * GET /api/auth/me
- */
+// GET /api/auth/me
 router.get('/me', authenticate, authController.getProfile);
 
 module.exports = router;
